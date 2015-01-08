@@ -1,10 +1,12 @@
 <?php
 include_once 'connect.php';
 
+// start sessions mechanism
+session_start();
+
 // get values from form
-// you will want to make these variables sent under POST request
-$username = $_GET['username'];
-$pass = $_GET['pass'];
+$username = $_POST['username'];
+$pass = $_POST['pass'];
 
 // get hash key from sent password
 $passkey = md5($pass);
@@ -13,10 +15,14 @@ $passkey = md5($pass);
 $sql = "SELECT username, pass from users WHERE (username = '$username' AND pass='$passkey')";
 $result = $connection->query($sql);
 
-
-if ($result->num_rows == 1) 
-	 echo ("a real user");
-else echo ("not a user");
+if ($result->num_rows == 1) {
+	$_SESSION['login'] = $username;
+	unset($_SESSION['error']);
+	header('location:listphones.php');
+} else {
+	$_SESSION['error'] = "not registered";
+	header('location:loginform.php');
+}
 
 
 ?>
